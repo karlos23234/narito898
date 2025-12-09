@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WinterMarket - Christmas Marketplace</title>
+  <meta name="description" content="A festive marketplace for the holiday season" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f7f6f1;
+      --foreground: #25261b;
+      --card: #ffffff;
+      --card-foreground: #25261b;
+      --popover: #ffffff;
+      --popover-foreground: #25261b;
+      --primary: #3a6e47;
+      --primary-foreground: #ffffff;
+      --secondary: #eaf0ed;
+      --secondary-foreground: #25261b;
+      --muted: #f0ede8;
+      --muted-foreground: #807f7d;
+      --accent: #ea6c39;
+      --accent-foreground: #ffffff;
+      --destructive: #d84242;
+      --destructive-foreground: #ffffff;
+      --border: #e1ded7;
+      --input: #e1ded7;
+      --ring: #3a6e47;
+    }
+
+    .dark {
+      --background: #252525;
+      --foreground: #faf9f7;
+      --card: #252525;
+      --card-foreground: #faf9f7;
+      --popover: #252525;
+      --popover-foreground: #faf9f7;
+      --primary: #faf9f7;
+      --primary-foreground: #353535;
+      --secondary: #454545;
+      --secondary-foreground: #faf9f7;
+      --muted: #454545;
+      --muted-foreground: #b5b5b5;
+      --accent: #454545;
+      --accent-foreground: #faf9f7;
+      --destructive: #659366;
+      --destructive-foreground: #a2d9a0;
+      --border: #454545;
+      --input: #454545;
+      --ring: #707070;
+    }
+
+    * {
+      border-color: var(--border);
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: 'Geist', system-ui, -apple-system, sans-serif;
+    }
+
+    @keyframes snowfall {
+      0% {
+        transform: translateY(-10vh) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) translateX(10px);
+        opacity: 0.3;
+      }
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10vh;
+      color: white;
+      font-size: 1rem;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: snowfall linear infinite;
+      z-index: 50;
+    }
+
+    .category-button {
+      cursor: pointer;
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-weight: 600;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-button:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .chevron-rotate {
+      transition: transform 0.3s ease;
+    }
+
+    .chevron-rotate.rotated {
+      transform: rotate(180deg);
+    }
+
+    .product-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    .product-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="root" class="min-h-screen relative overflow-hidden">
+    <!-- Snowfall container handled by JavaScript -->
+
+    <!-- Christmas decorations background -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-20">
+      <div
+        class="absolute top-0 left-0 w-full h-32"
+        style="background: linear-gradient(to bottom, rgba(234, 108, 39, 0.3), transparent)"
+      ></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 shadow-lg border-b-4" style="border-color: var(--accent-foreground); background-color: var(--ring)">
+      <div class="container mx-auto px-4 py-3 md:py-4">
+        <div class="flex justify-between gap-4 items-end">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-lg"
+              style="background-color: var(--accent-foreground)"
+            >
+              <span class="text-2xl">🎄</span>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight" style="color: var(--accent-foreground)">
+              Pervi Rams
+            </h1>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="flex-1 max-w-md md:max-w-2xl">
+            <div class="relative">
+              <svg
+                class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                style="color: var(--muted-foreground)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <input
+                type="search"
+                placeholder="ПОИСК"
+                class="pl-10 h-12 w-full rounded-full border-2"
+                style="background-color: var(--primary); color: var(--primary-foreground); border-color: rgba(255, 255, 255, 0.2); --placeholder-color: rgba(255, 255, 255, 0.7)"
+              />
+            </div>
+          </div>
+
+          <!-- User Section -->
+          <div class="flex items-center gap-3">
+            <button
+              class="rounded-full px-4 md:px-6 py-2 font-semibold border-none cursor-pointer transition-opacity hover:opacity-90 flex items-center gap-2"
+              style="background-color: var(--primary); color: var(--primary-foreground)"
+            >
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span class="hidden md:inline">ANUYUMS</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold" style="background-color: var(--accent-foreground); color: var(--accent)">
+                admin
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="mt-4 flex items-center gap-4 md:gap-6 flex-wrap" style="color: var(--accent-foreground)">
+          <button class="px-4 py-2 border-none background-transparent cursor-pointer hover:opacity-80 text-sm md:text-base">
+            ПОДДЕРЖИВАТЬ
+          </button>
+          <button class="px-4 py-2 border-none background-transparent cursor-pointer hover:opacity-80 text-sm md:text-base">
+            МАГАЗИНЫ
+          </button>
+          <button class="px-4 py-2 border-none background-transparent cursor-pointer hover:opacity-80 text-sm md:text-base">
+            АРБИТРАЖ
+          </button>
+          <button class="px-4 py-2 border-none background-transparent cursor-pointer hover:opacity-80 text-sm md:text-base">
+            О НАС
+          </button>
+          <div class="ml-auto text-sm font-semibold">1 DASH = $51.64 | 1941563 AMD</div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="relative z-10 flex">
+      <!-- Sidebar -->
+      <aside class="hidden lg:block w-64 border-r p-6 space-y-2 sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto" style="background-color: #d1d5db">
+        <!-- Christmas Tree Decoration -->
+        <div class="mb-6 text-center">
+          <div class="text-6xl mb-2">🎄</div>
+          <div class="flex justify-center gap-2 mb-2">
+            <span class="text-2xl">🎁</span>
+            <span class="text-2xl">⭐</span>
+            <span class="text-2xl">🔔</span>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div id="categories-container"></div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 p-6 md:p-8" style="background-color: var(--primary); color: var(--card)">
+        <!-- Product Grid Header -->
+        <div class="mb-6 backdrop-blur-sm p-4 rounded-lg shadow-lg border-2" style="background-color: rgba(58, 110, 71, 0.9); border-color: rgba(255, 255, 255, 0.2)">
+          <h2 class="text-2xl font-bold text-center" style="color: var(--primary-foreground)">ТОП 5 ПРИДАЧІ ПО ОТЗЫВАМ</h2>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" style="background-color: var(--primary)"></div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const categoryOptions = {
+      КАТЕГОРИИ: ["Все", "0.5g", "1.0g", "1.5+"],
+      ГОРОД: ["Ереван", "Малатиа-Себастиа", "Комитас", "Арабкир", "Зейтун", "Аван", "Нор Норк", "Мараш", "Шенгавит"],
+      ЦЕНА: ["Все", "До 8500", "10000-18000", "21000+"],
+      "ТИП ТОВАРА": ["Все", "Новое", "Б/У", "Эксклюзив"],
+    };
+
+    const categories = ["КАТЕГОРИИ", "ГОРОД", "ЦЕНА", "ТИП ТОВАРА"];
+    const openCategories = new Set(["КАТЕГОРИИ"]);
+
+    const products = [
+      {
+        id: 1,
+        name: "TOKIO_420",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "🔥",
+      },
+      {
+        id: 2,
+        name: "DR.GREEN GREENSMOKE",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "🌿",
+      },
+      {
+        id: 3,
+        name: "ԱԲՈԼԻՍԻԱՆ",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "👔",
+      },
+      {
+        id: 4,
+        name: "AMERIKAUS",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "🇺🇸",
+      },
+      {
+        id: 5,
+        name: "GORILLA",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "🦍",
+      },
+      {
+        id: 6,
+        name: "ВИБРАТ",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "⚡",
+      },
+      {
+        id: 7,
+        name: "SOHO LOUSHNA",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "🎬",
+      },
+      {
+        id: 8,
+        name: "KANACH SOFIA",
+        price: 255,
+        rating: 5,
+        image: "/placeholder.svg?height=300&width=300",
+        badge: "👧",
+      },
+    ];
+
+    const colors = [
+      "bg-yellow-400",
+      "bg-lime-500",
+      "bg-emerald-600",
+      "bg-slate-900",
+      "bg-yellow-300",
+      "bg-red-700",
+      "bg-neutral-700",
+      "bg-cyan-400",
+    ];
+
+    function createStars(rating) {
+      return Array.from({ length: 5 }, (_, i) =>
+        i < rating
+          ? '<svg class="h-4 w-4 fill-yellow-400 text-yellow-400 inline" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+          : '<svg class="h-4 w-4 fill-gray-400 text-gray-400 inline" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+      ).join("");
+    }
+
+    // Render Categories
+    function renderCategories() {
+      const container = document.getElementById("categories-container");
+      container.innerHTML = categories
+        .map(
+          (category) => `
+        <div class="border-b pb-2" style="border-color: var(--border)">
+          <button class="category-button" data-category="${category}">
+            ${category}
+            <svg class="chevron-rotate h-4 w-4 ${openCategories.has(category) ? "rotated" : ""}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+          </button>
+          ${
+            openCategories.has(category)
+              ? `
+            <div class="mt-2 ml-4 space-y-1 text-sm" style="color: var(--muted-foreground)">
+              ${categoryOptions[category]
+                ?.map(
+                  (option) =>
+                    `<div class="hover:text-foreground cursor-pointer py-1">${option}</div>`
+                )
+                .join("")}
+            </div>
+          `
+              : ""
+          }
+        </div>
+      `
+        )
+        .join("");
+
+      document.querySelectorAll(".category-button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const category = btn.dataset.category;
+          if (openCategories.has(category)) {
+            openCategories.delete(category);
+          } else {
+            openCategories.add(category);
+          }
+          renderCategories();
+        });
+      });
+    }
+
+    // Render Products
+    function renderProducts() {
+      const container = document.getElementById("products-container");
+      container.innerHTML = products
+        .map(
+          (product) => `
+        <div class="product-card ${colors[product.id % colors.length]}">
+          <div class="relative aspect-square">
+            <img src="${product.image}" alt="${product.name}" class="product-image" />
+            <div class="absolute top-2 right-2 text-3xl">${product.badge}</div>
+          </div>
+          <div class="p-4" style="background-color: rgba(0, 0, 0, 0.9)">
+            <h3 class="font-bold text-lg mb-2" style="color: var(--card)">${product.name}</h3>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1">
+                <span class="text-sm font-semibold" style="color: var(--card)">От ${product.price} ₽</span>
+              </div>
+              <div class="flex items-center gap-0.5">
+                ${createStars(product.rating)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+        )
+        .join("");
+    }
+
+    // Snowfall Effect
+    function createSnowflake() {
+      const snowflake = document.createElement("div");
+      snowflake.classList.add("snowflake");
+      snowflake.innerHTML = "❄";
+      snowflake.style.left = Math.random() * 100 + "vw";
+      snowflake.style.animationDuration = Math.random() * 3 + 5 + "s";
+      snowflake.style.opacity = (Math.random() * 0.6 + 0.3).toString();
+      snowflake.style.fontSize = Math.random() * 10 + 10 + "px";
+
+      document.body.appendChild(snowflake);
+
+      setTimeout(() => {
+        snowflake.remove();
+      }, 8000);
+    }
+
+    // Initialize
+    renderCategories();
+    renderProducts();
+    setInterval(createSnowflake, 300);
+  </script>
+</body>
+</html>
